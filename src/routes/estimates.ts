@@ -1,31 +1,56 @@
 import { Router, Request, Response } from 'express';
+import { getConnection, closeConnection } from '../../db';
 
 const router = Router();
 
-// Dummy data for estimates
-const estimates = [
-    { projectName: "Project 1", estimatedCost: 1000, deadline: "2024-12-31" },
-    { projectName: "Project 2", estimatedCost: 2000, deadline: "2024-11-30" }
-];
-
 // GET route to retrieve estimates
-router.get('/', (req: Request, res: Response) => {
-    res.json(estimates); // Respond with the estimates array
+router.get('/', async (req: Request, res: Response) => {
+    let connection: any;
+
+    try {
+        connection = await getConnection();
+
+        // Fetch estimates from the database
+        const result = await connection.execute(
+            `SELECT project_name AS "projectName", estimated_cost AS "estimatedCost", deadline FROM estimates`
+        );
+
+        res.json(result.rows); // Return the database rows as the response
+    } catch (error) {
+        console.error('Error fetching estimates:', error);
+        res.status(500).json({ message: 'Failed to fetch estimates' });
+    } finally {
+        await closeConnection(connection);
+    }
 });
 
 // POST route to create a new estimate
-router.post('/', (req: Request, res: Response) => {
+router.post('/', async (req: Request, res: Response) => {
     const { projectName, estimatedCost, deadline } = req.body;
 
     if (!projectName || !estimatedCost || !deadline) {
-        return res.status(400).json({ message: "Missing required fields" });
+        return res.status(400).json({ message: 'Missing required fields' });
     }
 
-    // Add the new estimate to the dummy data (in real-world, you would save to a database)
-    const newEstimate = { projectName, estimatedCost, deadline };
-    estimates.push(newEstimate);
+    let connection: any;
 
-    res.status(201).json({ message: "Estimate created successfully", estimate: newEstimate });
+    try {
+        connection = await getConnection();
+
+        // Insert a new estimate into the database
+        await connection.execute(
+            `INSERT INTO estimates (project_name, estimated_cost, deadline) VALUES (:projectName, :estimatedCost, TO_DATE(:deadline, 'YYYY-MM-DD'))`,
+            { projectName, estimatedCost, deadline }, // Bind variables
+            { autoCommit: true } // Commit changes
+        );
+
+        res.status(201).json({ message: 'Estimate created successfully' });
+    } catch (error) {
+        console.error('Error creating estimate:', error);
+        res.status(500).json({ message: 'Failed to create estimate' });
+    } finally {
+        await closeConnection(connection);
+    }
 });
 
 export default router;

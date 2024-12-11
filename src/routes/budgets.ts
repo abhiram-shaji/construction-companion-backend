@@ -30,6 +30,7 @@ router.put('/:id', async (req: Request, res: Response) => {
     const { id } = req.params;
     const { budgetLimit, currentSpend } = req.body;
 
+    // Validate input
     if (!budgetLimit || !currentSpend) {
         return res.status(400).json({ message: 'Missing required fields' });
     }
@@ -51,7 +52,18 @@ router.put('/:id', async (req: Request, res: Response) => {
         if (result.rowsAffected === 0) {
             res.status(404).json({ message: 'Budget not found' });
         } else {
-            res.json({ message: 'Budget updated successfully' });
+            // Return the updated budget details
+            const updatedBudget = await connection.execute(
+                `SELECT id, project_id AS "projectId", budget_limit AS "budgetLimit", current_spend AS "currentSpend"
+                 FROM budgets
+                 WHERE id = :id`,
+                { id }
+            );
+
+            res.json({
+                message: 'Budget updated successfully',
+                budget: updatedBudget.rows[0],
+            });
         }
     } catch (error) {
         console.error('Error updating budget:', error);

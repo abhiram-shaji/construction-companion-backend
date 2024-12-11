@@ -53,4 +53,38 @@ router.post('/', async (req: Request, res: Response) => {
     }
 });
 
+// DELETE route to delete an estimate
+router.delete('/:id', async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    if (!id) {
+        return res.status(400).json({ message: 'Missing estimate ID' });
+    }
+
+    let connection: any;
+
+    try {
+        connection = await getConnection();
+
+        // Execute delete query
+        const result = await connection.execute(
+            `DELETE FROM estimates WHERE id = :id`,
+            { id }, // Bind variables
+            { autoCommit: true } // Commit changes
+        );
+
+        if (result.rowsAffected === 0) {
+            return res.status(404).json({ message: 'Estimate not found' });
+        }
+
+        res.json({ message: 'Estimate deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting estimate:', error);
+        res.status(500).json({ message: 'Failed to delete estimate' });
+    } finally {
+        await closeConnection(connection);
+    }
+});
+
+
 export default router;

@@ -10,7 +10,6 @@ router.get('/', async (req: Request, res: Response) => {
     try {
         connection = await getConnection();
 
-        // Fetch budgets from the database
         const result = await connection.execute(
             `SELECT id, project_id AS "projectId", budget_limit AS "budgetLimit", current_spend AS "currentSpend"
              FROM budgets`
@@ -25,12 +24,48 @@ router.get('/', async (req: Request, res: Response) => {
     }
 });
 
+// POST route to create a new budget
+router.post('/', async (req: Request, res: Response) => {
+    const { projectId, budgetLimit, currentSpend } = req.body;
+
+    // Validate input
+    if (!projectId || !budgetLimit || !currentSpend) {
+        return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    let connection: any;
+
+    try {
+        connection = await getConnection();
+
+        const result = await connection.execute(
+            `INSERT INTO budgets (project_id, budget_limit, current_spend)
+             VALUES (:projectId, :budgetLimit, :currentSpend)`,
+            { projectId, budgetLimit, currentSpend },
+            { autoCommit: true }
+        );
+
+        res.status(201).json({
+            message: 'Budget created successfully',
+            budget: {
+                projectId,
+                budgetLimit,
+                currentSpend,
+            },
+        });
+    } catch (error) {
+        console.error('Error creating budget:', error);
+        res.status(500).json({ message: 'Failed to create budget' });
+    } finally {
+        await closeConnection(connection);
+    }
+});
+
 // PUT route to update a budget
 router.put('/:id', async (req: Request, res: Response) => {
     const { id } = req.params;
     const { budgetLimit, currentSpend } = req.body;
 
-    // Validate input
     if (!budgetLimit || !currentSpend) {
         return res.status(400).json({ message: 'Missing required fields' });
     }
@@ -40,7 +75,6 @@ router.put('/:id', async (req: Request, res: Response) => {
     try {
         connection = await getConnection();
 
-        // Update the budget in the database
         const result = await connection.execute(
             `UPDATE budgets
              SET budget_limit = :budgetLimit, current_spend = :currentSpend
@@ -52,7 +86,6 @@ router.put('/:id', async (req: Request, res: Response) => {
         if (result.rowsAffected === 0) {
             res.status(404).json({ message: 'Budget not found' });
         } else {
-            // Return the updated budget details
             const updatedBudget = await connection.execute(
                 `SELECT id, project_id AS "projectId", budget_limit AS "budgetLimit", current_spend AS "currentSpend"
                  FROM budgets

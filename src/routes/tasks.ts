@@ -2,6 +2,12 @@ import { Router } from 'express';
 
 const router = Router();
 
+// GET route
+router.get('/', (req, res) => {
+    // Replace with logic to fetch tasks (e.g., from a database)
+    res.send('List of tasks');
+});
+
 // POST route
 router.post('/', (req, res) => {
     const { taskName, assignedTo, dueDate } = req.body;

@@ -3,21 +3,29 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const dbConfig = {
-    user: 'ADMIN', // Replace with your Oracle DB username
-    password: process.env.ORACLE_PASSWORD, // Use .env for the password
-    connectString: 'constructiondb_high', // Use the chosen connect string from tnsnames.ora
-    walletLocation: './wallet', // Path to your extracted wallet directory
-};
+const walletLocation = 'C:\\Wallet_constructiondb';  // Use forward slashes or ensure escapes
 
-oracledb.initOracleClient({ configDir: dbConfig.walletLocation }); // Initialize Oracle Client with wallet
+try {
+  oracledb.initOracleClient({ configDir: walletLocation });
+  console.log('Oracle Client initialized successfully!');
+} catch (err) {
+  console.error('Failed to initialize Oracle Client:', err);
+  process.exit(1);
+}
+
+const dbConfig = {
+    user: 'ADMIN',
+    password: process.env.ORACLE_PASSWORD,
+    connectString: 'constructiondb_medium' // Use the exact alias from tnsnames.ora
+  };
 
 export async function getConnection() {
-    try {
-        const connection = await oracledb.getConnection(dbConfig);
-        return connection;
-    } catch (error) {
-        console.error('Failed to connect to OracleDB:', error);
-        throw error;
-    }
+  try {
+    const connection = await oracledb.getConnection(dbConfig);
+    console.log('Connected to OracleDB successfully!');
+    return connection;
+  } catch (error) {
+    console.error('Failed to connect to OracleDB:', error);
+    throw error;
+  }
 }

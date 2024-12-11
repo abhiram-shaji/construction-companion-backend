@@ -2,9 +2,11 @@
   "compilerOptions": {
     "target": "ES6",
     "module": "CommonJS",
-    "outDir": "./dist",
-    "rootDir": "./src",
     "strict": true,
-    "esModuleInterop": true
-  }
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "outDir": "./dist",
+    "typeRoots": ["./node_modules/@types", "./src/types"] // Include custom types
+  },
+  "include": ["src/**/*"]
 }

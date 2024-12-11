@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { getConnection, closeConnection } from '../../db';
+import { getConnection, closeConnection } from '../db';
 
 const router = Router();
 

@@ -1,6 +1,7 @@
 import oracledb from 'oracledb';
 
-oracledb.initOracleClient({ libDir: './wallet' });
+// Update libDir to your Oracle Client library path
+oracledb.initOracleClient({ libDir: 'C:\\oracle\\instantclient_23_6' });
 
 async function testConnection() {
     try {

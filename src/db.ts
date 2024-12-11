@@ -7,7 +7,7 @@ dotenv.config();
 
 // Initialize the Oracle Client
 try {
-    oracledb.initOracleClient({ libDir: './instantclient_23_6' }); // Replace with your actual Instant Client path
+    oracledb.initOracleClient({ libDir: './src/instantclient_23_6' }); // Replace with your actual Instant Client path
     console.log('Oracle Client initialized successfully!');
 } catch (err) {
     console.error('Failed to initialize Oracle Client:', err);

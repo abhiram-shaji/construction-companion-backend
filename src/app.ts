@@ -1,22 +1,28 @@
 import express, { Application } from 'express';
 import cors from 'cors';
-import estimatesRoutes from './routes/estimates';
-import budgetsRoutes from './routes/budgets';
+//import usersRoutes from './routes/users';
+//import authRoutes from './routes/auth';
+//import projectsRoutes from './routes/projects';
 import tasksRoutes from './routes/tasks';
+import budgetsRoutes from './routes/budgets';
+import estimatesRoutes from './routes/estimates';
 
 const app: Application = express();
 
 // Middleware
-app.use(express.json()); // For parsing application/json
-app.use(cors()); // Enable CORS for all origins
+app.use(express.json());
+app.use(cors());
 
 // Routes
-app.use('/api/estimates', estimatesRoutes);
-app.use('/api/budgets', budgetsRoutes);
+//app.use('/api/users', usersRoutes);
+//app.use('/api/auth', authRoutes);
+//app.use('/api/projects', projectsRoutes);
 app.use('/api/tasks', tasksRoutes);
+app.use('/api/budgets', budgetsRoutes);
+app.use('/api/estimates', estimatesRoutes);
 
 // Handle 404 Errors for unknown routes
-app.use((req, res, next) => {
+app.use((req, res) => {
     res.status(404).json({ message: 'Endpoint not found' });
 });
 

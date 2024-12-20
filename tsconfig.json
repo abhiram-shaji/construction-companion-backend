@@ -6,7 +6,9 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "outDir": "./dist",
-    "typeRoots": ["./node_modules/@types", "./src/types"] // Include custom types
+    "rootDir": "./src",
+    "typeRoots": ["./node_modules/@types", "./src/types"]
   },
-  "include": ["src/**/*", "src/db.ts"]
+  "include": ["src/**/*", "src/db.ts"],
+  "exclude": ["node_modules"]
 }

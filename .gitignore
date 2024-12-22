@@ -1,0 +1,8 @@
+
+*.sym
+*.dll
+src/instantclient_23_6/adrci.exe
+src/instantclient_23_6/BASIC_LICENSE
+src/instantclient_23_6/BASIC_README
+src/instantclient_23_6/genezi.exe
+src/instantclient_23_6/uidrvci.exe
